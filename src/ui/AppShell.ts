@@ -1,9 +1,14 @@
 // ─── App Shell UI ─────────────────────────────────────────────────────────────
 
-import { appState } from '../core/AppState.ts';
-import { createEmptyProject } from '../core/trackHelpers.ts';
+import { appState } from "../core/AppState.ts";
+import { createEmptyProject } from "../core/trackHelpers.ts";
+import {
+  openFilePicker,
+  readFileAsArrayBuffer,
+  validateMidiExtension,
+} from "../io/fileLoader.ts";
 
-const APP_VERSION = '0.0.0';
+const APP_VERSION = "0.0.0";
 
 export function mountApp(container: HTMLElement): void {
   container.innerHTML = `
@@ -65,34 +70,45 @@ export function mountApp(container: HTMLElement): void {
 }
 
 function bindControls(container: HTMLElement): void {
-  container.querySelector('#btn-new')?.addEventListener('click', () => {
+  container.querySelector("#btn-new")?.addEventListener("click", () => {
     if (appState.isDirty()) {
-      if (!confirm('Discard unsaved changes and create a new project?')) {
+      if (!confirm("Discard unsaved changes and create a new project?")) {
         return;
       }
     }
     appState.loadProject(createEmptyProject());
     mountApp(container);
-    setStatus(container, 'New project created');
+    setStatus(container, "New project created");
   });
 
-  container.querySelector('#btn-open')?.addEventListener('click', () => {
-    setStatus(container, 'Open — not yet implemented');
+  container.querySelector("#btn-open")?.addEventListener("click", () => {
+    openFilePicker()
+      .then((result) => {
+        if (!result) return; // user cancelled
+        appState.setPendingMidi(result.buffer, result.filename);
+        setStatus(container, `File loaded: ${result.filename}`);
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        setStatus(container, `Error: ${msg}`);
+      });
   });
 
-  container.querySelector('#btn-save')?.addEventListener('click', () => {
-    setStatus(container, 'Save — not yet implemented');
+  container.querySelector("#btn-save")?.addEventListener("click", () => {
+    setStatus(container, "Save — not yet implemented");
   });
 
-  container.querySelector('#btn-export')?.addEventListener('click', () => {
-    setStatus(container, 'Export — not yet implemented');
+  container.querySelector("#btn-export")?.addEventListener("click", () => {
+    setStatus(container, "Export — not yet implemented");
   });
 
-  container.querySelector('#btn-add-track')?.addEventListener('click', () => {
-    setStatus(container, 'Add track — not yet implemented');
+  container.querySelector("#btn-add-track")?.addEventListener("click", () => {
+    setStatus(container, "Add track — not yet implemented");
   });
 
-  container.querySelector('#input-bpm')?.addEventListener('change', (e) => {
+  bindDragAndDrop(container);
+
+  container.querySelector("#input-bpm")?.addEventListener("change", (e) => {
     const val = parseInt((e.target as HTMLInputElement).value, 10);
     if (!isNaN(val) && val >= 20 && val <= 300) {
       appState.project.bpm = val;
@@ -102,7 +118,49 @@ function bindControls(container: HTMLElement): void {
   });
 }
 
+function bindDragAndDrop(container: HTMLElement): void {
+  const dropTarget = container.querySelector<HTMLElement>(".app-main") ?? container;
+
+  dropTarget.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropTarget.classList.add("drag-over");
+  });
+
+  dropTarget.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    dropTarget.classList.remove("drag-over");
+  });
+
+  dropTarget.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropTarget.classList.remove("drag-over");
+
+    const file = e.dataTransfer?.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!validateMidiExtension(file.name)) {
+      setStatus(
+        container,
+        `Error: Unsupported file type "${file.name}". Please drop a .mid or .midi file.`,
+      );
+      return;
+    }
+
+    readFileAsArrayBuffer(file)
+      .then((buffer) => {
+        appState.setPendingMidi(buffer, file.name);
+        setStatus(container, `File loaded: ${file.name}`);
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        setStatus(container, `Error: ${msg}`);
+      });
+  });
+}
+
 function setStatus(container: HTMLElement, message: string): void {
-  const el = container.querySelector<HTMLElement>('#status-text');
+  const el = container.querySelector<HTMLElement>("#status-text");
   if (el) el.textContent = message;
 }

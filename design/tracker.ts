@@ -71,7 +71,7 @@ export const epics: Epic[] = [
     title: 'Project & File Management',
     description:
       'Create new projects from scratch and load existing .mid files from the local filesystem.',
-    status: 'Open',
+    status: 'In-Progress',
     milestoneId: 'M1',
     dependsOnEpicIds: [],
     storyIds: ['S1', 'S2', 'S3', 'S4', 'S5'],
@@ -196,7 +196,7 @@ export const stories: Story[] = [
     description:
       'Provide a "New Project" action that initialises a fresh MidiProject with default BPM and time signature.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E1',
     dependsOnStoryIds: ['S1'],
     acceptanceCriteria: [
@@ -275,7 +275,8 @@ export const stories: Story[] = [
   {
     id: 'S7',
     title: 'Remove a track',
-    description: 'Allow the user to delete a track from the project with a confirmation prompt.',
+    description:
+      'Allow the user to delete a track from the project with a confirmation prompt.',
     type: 'Feature',
     status: 'Open',
     epicId: 'E2',
@@ -322,7 +323,8 @@ export const stories: Story[] = [
   {
     id: 'S10',
     title: 'Rename a track',
-    description: 'Allow inline editing of the track name directly in the track list.',
+    description:
+      'Allow inline editing of the track name directly in the track list.',
     type: 'Feature',
     status: 'Open',
     epicId: 'E2',
@@ -355,7 +357,8 @@ export const stories: Story[] = [
   {
     id: 'S12',
     title: 'Implement stop / reset',
-    description: 'Stop button halts playback and resets the playhead to the beginning.',
+    description:
+      'Stop button halts playback and resets the playhead to the beginning.',
     type: 'Feature',
     status: 'Open',
     epicId: 'E3',
@@ -402,7 +405,8 @@ export const stories: Story[] = [
   {
     id: 'S15',
     title: 'Implement loop toggle',
-    description: 'Add a Loop button that causes playback to loop back to the start when it ends.',
+    description:
+      'Add a Loop button that causes playback to loop back to the start when it ends.',
     type: 'Feature',
     status: 'Open',
     epicId: 'E3',
@@ -474,7 +478,7 @@ export const stories: Story[] = [
     epicId: 'E4',
     dependsOnStoryIds: ['S17'],
     acceptanceCriteria: [
-      'Each track\'s MIDI channel matches its index (or explicit assignment).',
+      "Each track's MIDI channel matches its index (or explicit assignment).",
       'A General MIDI program-change event is written at tick 0 for each track.',
       'Percussion tracks are assigned channel 10.',
       'Re-loading the saved file restores the correct instrument selection in the UI.',
@@ -533,7 +537,8 @@ export const stories: Story[] = [
   {
     id: 'S23',
     title: 'Export progress indicator',
-    description: 'Show a progress bar or spinner during the offline render + encode pipeline.',
+    description:
+      'Show a progress bar or spinner during the offline render + encode pipeline.',
     type: 'Enhancement',
     status: 'Open',
     epicId: 'E5',
@@ -687,10 +692,10 @@ export const stories: Story[] = [
     epicId: 'E7',
     dependsOnStoryIds: ['S30', 'S31'],
     acceptanceCriteria: [
-      'Pressing a key on the MIDI controller produces audible output through the app\'s synth.',
+      "Pressing a key on the MIDI controller produces audible output through the app's synth.",
       'Note-off messages stop the note without cutting off early.',
       'MIDI velocity (aftertouch) maps to Tone.js synth velocity.',
-      'The active track\'s instrument is used for audition (not a fixed default).',
+      "The active track's instrument is used for audition (not a fixed default).",
     ],
   },
   {
@@ -731,7 +736,7 @@ export const stories: Story[] = [
     id: 'S35',
     title: 'Trigger notes via mouse clicks on piano keys',
     description:
-      'Mouse-down on a piano key plays the note; mouse-up stops it, using the current track\'s instrument.',
+      "Mouse-down on a piano key plays the note; mouse-up stops it, using the current track's instrument.",
     type: 'Feature',
     status: 'Open',
     epicId: 'E8',
@@ -787,7 +792,7 @@ export const stories: Story[] = [
     acceptanceCriteria: [
       'A note is appended to the active track at the current cursor tick.',
       'Note duration in ticks matches the selected duration palette value.',
-      'The cursor advances by the note\'s duration after insertion.',
+      "The cursor advances by the note's duration after insertion.",
       'The newly inserted note is immediately visible on the grand staff (if visualizer is rendered).',
     ],
   },
@@ -820,7 +825,7 @@ export const stories: Story[] = [
     dependsOnStoryIds: ['S39'],
     acceptanceCriteria: [
       'Clicking a note head visually highlights it (e.g. turns blue).',
-      'The note\'s pitch, velocity, and duration are shown in an inspector panel.',
+      "The note's pitch, velocity, and duration are shown in an inspector panel.",
       'Only one note is selected at a time; clicking another deselects the previous one.',
       'Pressing Escape deselects the current note.',
     ],
@@ -861,7 +866,7 @@ export const stories: Story[] = [
     id: 'S43',
     title: 'Prompt to propagate velocity change to subsequent notes',
     description:
-      'After changing a note\'s velocity, ask the user whether to apply the same velocity to all following notes in the track.',
+      "After changing a note's velocity, ask the user whether to apply the same velocity to all following notes in the track.",
     type: 'Feature',
     status: 'Open',
     epicId: 'E9',
@@ -883,7 +888,7 @@ export const stories: Story[] = [
     epicId: 'E9',
     dependsOnStoryIds: ['S40'],
     acceptanceCriteria: [
-      'Duration palette keys (1–6) update the selected note\'s duration while a note is selected.',
+      "Duration palette keys (1–6) update the selected note's duration while a note is selected.",
       'Inspector panel shows a duration dropdown matching the palette options.',
       'Note head symbol updates visually (open vs filled) on duration change.',
       'Note.durationTicks in AppState is updated to match the new duration.',
@@ -908,7 +913,8 @@ export const stories: Story[] = [
   {
     id: 'S46',
     title: 'Delete selected note',
-    description: 'Allow the user to delete the currently selected note via the Delete key or a trash icon.',
+    description:
+      'Allow the user to delete the currently selected note via the Delete key or a trash icon.',
     type: 'Feature',
     status: 'Open',
     epicId: 'E9',
@@ -981,7 +987,7 @@ export const stories: Story[] = [
     dependsOnStoryIds: ['S49'],
     acceptanceCriteria: [
       'Pressing Stop (or a dedicated Stop Recording button) ends the recording session.',
-      'Committed notes appear in the track\'s note array in AppState.',
+      "Committed notes appear in the track's note array in AppState.",
       'The track is automatically disarmed after commit.',
       'The newly recorded notes are visible on the grand staff immediately.',
     ],
@@ -989,7 +995,8 @@ export const stories: Story[] = [
   {
     id: 'S51',
     title: 'Recording indicator in UI',
-    description: 'Display a clear visual indicator (flashing red dot + elapsed time) while recording is active.',
+    description:
+      'Display a clear visual indicator (flashing red dot + elapsed time) while recording is active.',
     type: 'Enhancement',
     status: 'Open',
     epicId: 'E10',

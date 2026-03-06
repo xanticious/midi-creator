@@ -1,11 +1,7 @@
 // ─── Web MIDI Input ───────────────────────────────────────────────────────────
 // Handles MIDI controller input via Web MIDI API.
 
-export type MidiMessageHandler = (
-  note: number,
-  velocity: number,
-  channel: number,
-) => void;
+export type MidiMessageHandler = (note: number, velocity: number, channel: number) => void;
 
 export class MidiInputManager {
   private access: MIDIAccess | null = null;
@@ -14,7 +10,7 @@ export class MidiInputManager {
 
   async init(): Promise<boolean> {
     if (!navigator.requestMIDIAccess) {
-      console.warn('Web MIDI API not supported in this browser.');
+      console.warn("Web MIDI API not supported in this browser.");
       return false;
     }
     try {
@@ -23,7 +19,7 @@ export class MidiInputManager {
       this.access.onstatechange = () => this.bindInputs();
       return true;
     } catch (err) {
-      console.error('MIDI access denied:', err);
+      console.error("MIDI access denied:", err);
       return false;
     }
   }
@@ -31,8 +27,7 @@ export class MidiInputManager {
   private bindInputs(): void {
     if (!this.access) return;
     for (const input of this.access.inputs.values()) {
-      input.onmidimessage = (event: MIDIMessageEvent) =>
-        this.handleMessage(event);
+      input.onmidimessage = (event: MIDIMessageEvent) => this.handleMessage(event);
     }
   }
 

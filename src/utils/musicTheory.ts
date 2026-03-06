@@ -1,18 +1,18 @@
 // ─── Music Theory Utils ───────────────────────────────────────────────────────
 
 export const NOTE_NAMES = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
 ] as const;
 
 /**
@@ -38,22 +38,14 @@ export function noteNameToMidi(name: string): number {
 /**
  * Convert ticks to seconds given BPM and PPQ.
  */
-export function ticksToSeconds(
-  ticks: number,
-  bpm: number,
-  ppq: number,
-): number {
+export function ticksToSeconds(ticks: number, bpm: number, ppq: number): number {
   return (ticks / ppq) * (60 / bpm);
 }
 
 /**
  * Convert seconds to ticks given BPM and PPQ.
  */
-export function secondsToTicks(
-  seconds: number,
-  bpm: number,
-  ppq: number,
-): number {
+export function secondsToTicks(seconds: number, bpm: number, ppq: number): number {
   return Math.round(seconds * (bpm / 60) * ppq);
 }
 

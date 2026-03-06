@@ -1,9 +1,9 @@
 // ─── Audio Playback Engine ───────────────────────────────────────────────────
 // Wraps Tone.js for MIDI playback.
 
-import * as Tone from 'tone';
-import type { MidiProject, Track } from '../core/types.ts';
-import { appState } from '../core/AppState.ts';
+import * as Tone from "tone";
+import type { MidiProject, Track } from "../core/types.ts";
+import { appState } from "../core/AppState.ts";
 
 export class PlaybackEngine {
   private synths: Map<string, Tone.PolySynth> = new Map();
@@ -40,28 +40,22 @@ export class PlaybackEngine {
     this.synths.set(track.id, synth);
 
     const bpm = Tone.getTransport().bpm.value;
-    const events: Array<
-      [Tone.Unit.Time, { note: string; duration: string; velocity: number }]
-    > = track.notes.map((n) => {
-      const startSeconds = (n.startTick / ppq) * (60 / bpm);
-      const durSeconds = (n.durationTicks / ppq) * (60 / bpm);
-      return [
-        startSeconds,
-        {
-          note: Tone.Frequency(n.pitch, 'midi').toNote(),
-          duration: `${durSeconds}`,
-          velocity: n.velocity / 127,
-        },
-      ];
-    });
+    const events: Array<[Tone.Unit.Time, { note: string; duration: string; velocity: number }]> =
+      track.notes.map((n) => {
+        const startSeconds = (n.startTick / ppq) * (60 / bpm);
+        const durSeconds = (n.durationTicks / ppq) * (60 / bpm);
+        return [
+          startSeconds,
+          {
+            note: Tone.Frequency(n.pitch, "midi").toNote(),
+            duration: `${durSeconds}`,
+            velocity: n.velocity / 127,
+          },
+        ];
+      });
 
     const part = new Tone.Part((time, value) => {
-      synth.triggerAttackRelease(
-        value.note,
-        value.duration,
-        time,
-        value.velocity,
-      );
+      synth.triggerAttackRelease(value.note, value.duration, time, value.velocity);
     }, events);
 
     part.start(0);

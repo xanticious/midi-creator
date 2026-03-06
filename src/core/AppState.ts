@@ -1,10 +1,10 @@
-import type { MidiProject, PlaybackState } from './types.ts';
+import type { MidiProject, PlaybackState } from "./types.ts";
 
 // ─── AppState Singleton ──────────────────────────────────────────────────────
 
 export function createDefaultProject(): MidiProject {
   return {
-    title: 'Untitled Project',
+    title: "Untitled Project",
     bpm: 120,
     timeSignature: { numerator: 4, denominator: 4 },
     ticksPerQuarterNote: 480,
@@ -28,6 +28,9 @@ class AppState {
 
   project: MidiProject = createDefaultProject();
   playback: PlaybackState = createDefaultPlaybackState();
+  /** Raw bytes of the most-recently opened .mid file (parsed in S4). */
+  pendingMidiBuffer: ArrayBuffer | null = null;
+  pendingMidiFilename: string | null = null;
   private _dirty: boolean = false;
 
   private constructor() {}
@@ -51,15 +54,27 @@ class AppState {
     this._dirty = false;
   }
 
+  setPendingMidi(buffer: ArrayBuffer, filename: string): void {
+    this.pendingMidiBuffer = buffer;
+    this.pendingMidiFilename = filename;
+  }
+
+  clearPendingMidi(): void {
+    this.pendingMidiBuffer = null;
+    this.pendingMidiFilename = null;
+  }
+
   loadProject(project: MidiProject): void {
     this.project = project;
     this.playback = createDefaultPlaybackState();
+    this.clearPendingMidi();
     this._dirty = false;
   }
 
   reset(): void {
     this.project = createDefaultProject();
     this.playback = createDefaultPlaybackState();
+    this.clearPendingMidi();
     this._dirty = false;
   }
 }
