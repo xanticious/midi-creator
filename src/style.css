@@ -102,15 +102,22 @@ button { cursor: pointer; border: none; outline: none; }
 }
 .piano-roll-placeholder { color: var(--color-text-muted); font-size: 0.9rem; }
 
+/* ─── Piano Roll Placeholders ────────────────────────────────────────────── */
+.piano-roll-placeholder    { text-align: center; color: var(--color-text-muted); }
+.placeholder-title         { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+.placeholder-hint          { font-size: 0.85rem; }
+.panel-placeholder         { padding: 1rem 0.75rem; color: var(--color-text-muted); font-size: 0.82rem; font-style: italic; }
+
 /* ─── Transport Bar ──────────────────────────────────────────────────────── */
 .transport-bar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: space-between;
   padding: 0 1rem;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
 }
+.transport-controls { display: flex; align-items: center; gap: 0.75rem; }
 .bpm-control { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--color-text-muted); }
 .bpm-control input {
   width: 64px;
@@ -121,4 +128,13 @@ button { cursor: pointer; border: none; outline: none; }
   padding: 0.2rem 0.4rem;
   font-size: 0.85rem;
 }
-.status-text { margin-left: auto; font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* ─── Status Bar ─────────────────────────────────────────────────────────── */
+.status-bar         { display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; color: var(--color-text-muted); }
+.status-text        { color: var(--color-text-muted); }
+.status-divider     { color: var(--color-border); user-select: none; }
+.app-version        { color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.status-indicator   { display: flex; align-items: center; gap: 0.35rem; }
+.status-dot         { width: 7px; height: 7px; border-radius: 50%; }
+.status-dot--offline { background: var(--color-text-muted); }
+.status-dot--online  { background: var(--color-success); }
