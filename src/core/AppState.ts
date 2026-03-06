@@ -28,6 +28,7 @@ class AppState {
 
   project: MidiProject = createDefaultProject();
   playback: PlaybackState = createDefaultPlaybackState();
+  private _dirty: boolean = false;
 
   private constructor() {}
 
@@ -38,9 +39,28 @@ class AppState {
     return AppState.instance;
   }
 
+  isDirty(): boolean {
+    return this._dirty;
+  }
+
+  markDirty(): void {
+    this._dirty = true;
+  }
+
+  markClean(): void {
+    this._dirty = false;
+  }
+
+  loadProject(project: MidiProject): void {
+    this.project = project;
+    this.playback = createDefaultPlaybackState();
+    this._dirty = false;
+  }
+
   reset(): void {
     this.project = createDefaultProject();
     this.playback = createDefaultPlaybackState();
+    this._dirty = false;
   }
 }
 

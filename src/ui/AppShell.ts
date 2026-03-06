@@ -1,6 +1,7 @@
 // ─── App Shell UI ─────────────────────────────────────────────────────────────
 
 import { appState } from '../core/AppState.ts';
+import { createEmptyProject } from '../core/trackHelpers.ts';
 
 const APP_VERSION = '0.0.0';
 
@@ -65,10 +66,14 @@ export function mountApp(container: HTMLElement): void {
 
 function bindControls(container: HTMLElement): void {
   container.querySelector('#btn-new')?.addEventListener('click', () => {
-    if (confirm('Create a new project? Unsaved changes will be lost.')) {
-      appState.reset();
-      mountApp(container);
+    if (appState.isDirty()) {
+      if (!confirm('Discard unsaved changes and create a new project?')) {
+        return;
+      }
     }
+    appState.loadProject(createEmptyProject());
+    mountApp(container);
+    setStatus(container, 'New project created');
   });
 
   container.querySelector('#btn-open')?.addEventListener('click', () => {
@@ -92,6 +97,7 @@ function bindControls(container: HTMLElement): void {
     if (!isNaN(val) && val >= 20 && val <= 300) {
       appState.project.bpm = val;
       appState.playback.bpm = val;
+      appState.markDirty();
     }
   });
 }

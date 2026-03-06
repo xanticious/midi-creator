@@ -355,7 +355,10 @@ function extractArray(src, name) {
   const marker = `export const ${name}`;
   const start = src.indexOf(marker);
   if (start === -1) return null;
-  const bracketStart = src.indexOf('[', start);
+  // Skip past the `=` assignment so we don't pick up `[` from a type annotation like `Milestone[]`
+  const eqPos = src.indexOf('=', start);
+  if (eqPos === -1) return null;
+  const bracketStart = src.indexOf('[', eqPos);
   if (bracketStart === -1) return null;
   let depth = 0, i = bracketStart;
   while (i < src.length) {

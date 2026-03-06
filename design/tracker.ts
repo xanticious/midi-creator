@@ -180,7 +180,7 @@ export const stories: Story[] = [
     description:
       'Initialize AppShell, top-level layout, and routing stubs so the SPA has a working skeleton.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E1',
     dependsOnStoryIds: [],
     acceptanceCriteria: [

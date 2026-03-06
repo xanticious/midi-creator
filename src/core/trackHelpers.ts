@@ -1,4 +1,16 @@
-import type { Track, Note } from './types.ts';
+import type { Track, Note, MidiProject } from './types.ts';
+
+// ─── Project Helpers ─────────────────────────────────────────────────────────
+
+export function createEmptyProject(title: string = 'Untitled'): MidiProject {
+  return {
+    title,
+    bpm: 120,
+    timeSignature: { numerator: 4, denominator: 4 },
+    ticksPerQuarterNote: 480,
+    tracks: [],
+  };
+}
 
 // ─── Track Helpers ───────────────────────────────────────────────────────────
 
