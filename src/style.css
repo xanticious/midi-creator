@@ -10,9 +10,9 @@
   --color-text-muted: #888;
   --color-danger: #e05c5c;
   --color-success: #5ce08a;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-sans: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --header-height: 56px;
+  --header-height: 60px;
   --transport-height: 52px;
   --track-list-width: 220px;
 }
@@ -55,18 +55,83 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   padding: 0 1rem;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+}
+.header-brand {
+  flex-shrink: 0;
 }
 .app-title {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-accent);
+  white-space: nowrap;
+}
+
+/* ─── Project Metadata ────────────────────────────────────────────────────── */
+.header-project-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+.project-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px dashed transparent;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  cursor: text;
+  outline: none;
+  min-width: 80px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.project-title:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface-2);
+}
+.project-title:focus {
+  border-color: var(--color-accent);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+.meta-field {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.meta-input {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
+  padding: 0.2rem 0.4rem;
+  font-size: 0.82rem;
+}
+.meta-input--bpm {
+  width: 60px;
+}
+.meta-value {
+  font-family: var(--font-mono);
+  color: var(--color-text);
 }
 .header-controls {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -239,4 +304,112 @@ button {
 }
 .status-dot--online {
   background: var(--color-success);
+}
+/* ─── Track Rows (S6–S10) ────────────────────────────────────────────────── */
+.track-row {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.45rem 0.6rem;
+  transition: background 0.1s;
+}
+.track-row:last-child {
+  border-bottom: none;
+}
+.track-row:hover {
+  background: var(--color-surface-2);
+}
+.track-row--muted {
+  opacity: 0.55;
+}
+.track-row--dimmed {
+  opacity: 0.45;
+}
+.track-row--soloed {
+  background: rgba(124, 106, 247, 0.08);
+}
+.track-row-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+}
+.track-name {
+  font-size: 0.84rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+  flex: 1;
+}
+.track-name:focus {
+  outline: 1px solid var(--color-accent);
+  border-radius: 2px;
+}
+.track-name-input {
+  font-size: 0.84rem;
+  font-weight: 500;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  color: var(--color-text);
+  padding: 0.1rem 0.3rem;
+  flex: 1;
+  width: 100%;
+}
+.track-name-input--error {
+  border-color: var(--color-danger);
+}
+.track-row-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.btn-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition:
+    background 0.1s,
+    color 0.1s,
+    border-color 0.1s;
+}
+.btn-icon:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.btn-icon.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.btn-icon.btn-delete-track:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+.track-row-instrument {
+  margin-top: 0.1rem;
+}
+.instrument-select {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
+  padding: 0.2rem 0.35rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.instrument-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
 }

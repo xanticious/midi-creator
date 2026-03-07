@@ -1,11 +1,16 @@
 // ─── App Shell UI ─────────────────────────────────────────────────────────────
 
-import { appState } from "../core/AppState.ts";
-import { createEmptyProject } from "../core/trackHelpers.ts";
-import { openFilePicker, readFileAsArrayBuffer, validateMidiExtension } from "../io/fileLoader.ts";
-import { loadMidiFile } from "../io/midiFile.ts";
-
-const APP_VERSION = "0.0.0";
+import { playbackEngine } from '../audio/PlaybackEngine.ts';
+import { appState } from '../core/AppState.ts';
+import { createEmptyProject } from '../core/trackHelpers.ts';
+import {
+  openFilePicker,
+  readFileAsArrayBuffer,
+  validateMidiExtension,
+} from '../io/fileLoader.ts';
+import { loadMidiFile } from '../io/midiFile.ts';
+import { mountTrackList } from './TrackList.ts';
+import { mountTransportBar } from './TransportBar.ts';
 
 export function mountApp(container: HTMLElement): void {
   const { title, bpm, timeSignature } = appState.project;
@@ -64,40 +69,30 @@ export function mountApp(container: HTMLElement): void {
       </main>
 
       <footer class="transport-bar" aria-label="Transport and status">
-        <div class="transport-controls">
-          <button id="btn-play" class="btn btn-transport" title="Play">▶ Play</button>
-          <button id="btn-stop" class="btn btn-transport" title="Stop">■ Stop</button>
-        </div>
-        <div class="status-bar">
-          <span class="status-indicator" id="midi-status" title="MIDI connection status">
-            <span class="status-dot status-dot--offline" id="midi-status-dot"></span>
-            MIDI: <span id="midi-status-label">Not connected</span>
-          </span>
-          <span class="status-divider">|</span>
-          <span class="status-text" id="status-text">Ready</span>
-          <span class="status-divider">|</span>
-          <span class="app-version">v${APP_VERSION}</span>
-        </div>
       </footer>
     </div>
   `;
 
   bindControls(container);
+  mountTrackList(container, () => {
+    mountApp(container);
+  });
+  mountTransportBar(container);
 }
 
 function bindControls(container: HTMLElement): void {
-  container.querySelector("#btn-new")?.addEventListener("click", () => {
+  container.querySelector('#btn-new')?.addEventListener('click', () => {
     if (appState.isDirty()) {
-      if (!confirm("Discard unsaved changes and create a new project?")) {
+      if (!confirm('Discard unsaved changes and create a new project?')) {
         return;
       }
     }
     appState.loadProject(createEmptyProject());
     mountApp(container);
-    setStatus(container, "New project created");
+    setStatus(container, 'New project created');
   });
 
-  container.querySelector("#btn-open")?.addEventListener("click", () => {
+  container.querySelector('#btn-open')?.addEventListener('click', () => {
     openFilePicker()
       .then((result) => {
         if (!result) return; // user cancelled
@@ -106,8 +101,12 @@ function bindControls(container: HTMLElement): void {
           appState.loadProject(project);
           appState.setPendingMidi(result.buffer, result.filename);
         } catch (parseErr: unknown) {
-          const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
-          setStatus(container, `Error: Could not parse "${result.filename}": ${msg}`);
+          const msg =
+            parseErr instanceof Error ? parseErr.message : String(parseErr);
+          setStatus(
+            container,
+            `Error: Could not parse "${result.filename}": ${msg}`,
+          );
           return;
         }
         mountApp(container);
@@ -119,50 +118,90 @@ function bindControls(container: HTMLElement): void {
       });
   });
 
-  container.querySelector("#btn-save")?.addEventListener("click", () => {
-    setStatus(container, "Save — not yet implemented");
+  container.querySelector('#btn-save')?.addEventListener('click', () => {
+    setStatus(container, 'Save — not yet implemented');
   });
 
-  container.querySelector("#btn-export")?.addEventListener("click", () => {
-    setStatus(container, "Export — not yet implemented");
+  container.querySelector('#btn-export')?.addEventListener('click', () => {
+    setStatus(container, 'Export — not yet implemented');
   });
 
-  container.querySelector("#btn-add-track")?.addEventListener("click", () => {
-    setStatus(container, "Add track — not yet implemented");
-  });
+  // Track add/remove/rename/instrument handled by TrackList module (mountTrackList)
 
   bindDragAndDrop(container);
 
-  container.querySelector("#input-bpm")?.addEventListener("change", (e) => {
+  // BPM input — clamp to 20–300, update Tone.Transport, and keep AppState + transport input in sync
+  container.querySelector('#input-bpm')?.addEventListener('change', (e) => {
     const target = e.target;
     if (!(target instanceof HTMLInputElement)) return;
-    const val = parseInt(target.value, 10);
-    if (!isNaN(val) && val >= 20 && val <= 300) {
-      appState.project.bpm = val;
-      appState.playback.bpm = val;
-      appState.markDirty();
+    let val = parseInt(target.value, 10);
+    if (isNaN(val)) {
+      target.value = String(appState.project.bpm);
+      return;
     }
+    val = Math.min(300, Math.max(20, val));
+    target.value = String(val);
+    playbackEngine.setBpm(val, appState.project);
+    appState.markDirty();
+    // Sync transport BPM input
+    const transportBpm = container.querySelector<HTMLInputElement>('#input-bpm-transport');
+    if (transportBpm) transportBpm.value = String(val);
+  });
+
+  // Project title inline editing (contenteditable span)
+  bindTitleEdit(container);
+}
+
+function bindTitleEdit(container: HTMLElement): void {
+  const titleEl = container.querySelector<HTMLElement>('#project-title');
+  if (!titleEl) return;
+
+  let originalText = titleEl.textContent ?? '';
+
+  titleEl.addEventListener('focus', () => {
+    originalText = titleEl.textContent ?? '';
+  });
+
+  titleEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      titleEl.blur();
+    } else if (e.key === 'Escape') {
+      titleEl.textContent = originalText;
+      titleEl.blur();
+    }
+  });
+
+  titleEl.addEventListener('blur', () => {
+    const newTitle = titleEl.textContent?.trim() ?? '';
+    if (!newTitle) {
+      titleEl.textContent = originalText;
+      return;
+    }
+    appState.project.title = newTitle;
+    appState.markDirty();
   });
 }
 
 function bindDragAndDrop(container: HTMLElement): void {
-  const dropTarget = container.querySelector<HTMLElement>(".app-main") ?? container;
+  const dropTarget =
+    container.querySelector<HTMLElement>('.app-main') ?? container;
 
-  dropTarget.addEventListener("dragover", (e) => {
+  dropTarget.addEventListener('dragover', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dropTarget.classList.add("drag-over");
+    dropTarget.classList.add('drag-over');
   });
 
-  dropTarget.addEventListener("dragleave", (e) => {
+  dropTarget.addEventListener('dragleave', (e) => {
     e.preventDefault();
-    dropTarget.classList.remove("drag-over");
+    dropTarget.classList.remove('drag-over');
   });
 
-  dropTarget.addEventListener("drop", (e) => {
+  dropTarget.addEventListener('drop', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dropTarget.classList.remove("drag-over");
+    dropTarget.classList.remove('drag-over');
 
     const file = e.dataTransfer?.files?.[0] ?? null;
     if (!file) return;
@@ -182,7 +221,8 @@ function bindDragAndDrop(container: HTMLElement): void {
           appState.loadProject(project);
           appState.setPendingMidi(buffer, file.name);
         } catch (parseErr: unknown) {
-          const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+          const msg =
+            parseErr instanceof Error ? parseErr.message : String(parseErr);
           setStatus(container, `Error: Could not parse "${file.name}": ${msg}`);
           return;
         }
@@ -197,6 +237,15 @@ function bindDragAndDrop(container: HTMLElement): void {
 }
 
 function setStatus(container: HTMLElement, message: string): void {
-  const el = container.querySelector<HTMLElement>("#status-text");
+  const el = container.querySelector<HTMLElement>('#status-text');
   if (el) el.textContent = message;
+}
+/** Escapes HTML special characters so project titles are safe to embed in innerHTML. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
 }

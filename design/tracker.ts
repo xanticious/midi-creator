@@ -71,7 +71,7 @@ export const epics: Epic[] = [
     title: 'Project & File Management',
     description:
       'Create new projects from scratch and load existing .mid files from the local filesystem.',
-    status: 'In-Progress',
+    status: 'Done',
     milestoneId: 'M1',
     dependsOnEpicIds: [],
     storyIds: ['S1', 'S2', 'S3', 'S4', 'S5'],
@@ -81,7 +81,7 @@ export const epics: Epic[] = [
     title: 'Track & Instrument Setup',
     description:
       'Add, remove, rename, and configure tracks; assign Tone.js instruments to each track.',
-    status: 'Open',
+    status: 'Done',
     milestoneId: 'M1',
     dependsOnEpicIds: ['E1'],
     storyIds: ['S6', 'S7', 'S8', 'S9', 'S10'],
@@ -228,7 +228,7 @@ export const stories: Story[] = [
     description:
       'Pass the loaded ArrayBuffer to the Midi class and map tracks/notes into MidiProject domain objects.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E1',
     dependsOnStoryIds: ['S3'],
     acceptanceCriteria: [
@@ -244,7 +244,7 @@ export const stories: Story[] = [
     description:
       'Show project title, BPM, and time signature in the app header with inline-edit capability for title and BPM.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E1',
     dependsOnStoryIds: ['S2', 'S4'],
     acceptanceCriteria: [
@@ -262,11 +262,12 @@ export const stories: Story[] = [
     description:
       'Provide an "Add Track" button that appends a new empty Track to the current project.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E2',
     dependsOnStoryIds: ['S2'],
     acceptanceCriteria: [
       'Clicking "Add Track" appends a Track with a default name ("Track N") and no notes.',
+      ,
       'The new track appears immediately in the track list UI.',
       'AppState.project.tracks includes the new track.',
       'A project can have up to 16 tracks (MIDI channel limit); beyond that the button is disabled.',
@@ -278,7 +279,7 @@ export const stories: Story[] = [
     description:
       'Allow the user to delete a track from the project with a confirmation prompt.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E2',
     dependsOnStoryIds: ['S6'],
     acceptanceCriteria: [
@@ -294,7 +295,7 @@ export const stories: Story[] = [
     description:
       'Provide a dropdown of available Tone.js instruments (PolySynth presets) for each track.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E2',
     dependsOnStoryIds: ['S6'],
     acceptanceCriteria: [
@@ -310,7 +311,7 @@ export const stories: Story[] = [
     description:
       'Build the TrackList component that displays all tracks with their name, instrument, and mute/solo controls.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E2',
     dependsOnStoryIds: ['S6', 'S8'],
     acceptanceCriteria: [
@@ -326,7 +327,7 @@ export const stories: Story[] = [
     description:
       'Allow inline editing of the track name directly in the track list.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E2',
     dependsOnStoryIds: ['S9'],
     acceptanceCriteria: [
@@ -344,7 +345,7 @@ export const stories: Story[] = [
     description:
       'Wire the Play/Pause button to Tone.Transport.start() / pause() and schedule all track notes.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S9'],
     acceptanceCriteria: [
@@ -360,7 +361,7 @@ export const stories: Story[] = [
     description:
       'Stop button halts playback and resets the playhead to the beginning.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S11'],
     acceptanceCriteria: [
@@ -376,7 +377,7 @@ export const stories: Story[] = [
     description:
       'Render a horizontal timeline bar; clicking or dragging it seeks playback to that position.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S12'],
     acceptanceCriteria: [
@@ -392,7 +393,7 @@ export const stories: Story[] = [
     description:
       'Show a real-time readout of bar:beat:tick and elapsed time (mm:ss) updated during playback.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S11'],
     acceptanceCriteria: [
@@ -408,7 +409,7 @@ export const stories: Story[] = [
     description:
       'Add a Loop button that causes playback to loop back to the start when it ends.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S11'],
     acceptanceCriteria: [
@@ -424,7 +425,7 @@ export const stories: Story[] = [
     description:
       'Wire the BPM input from the header to Tone.Transport.bpm so changes take effect immediately.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E3',
     dependsOnStoryIds: ['S5', 'S11'],
     acceptanceCriteria: [
