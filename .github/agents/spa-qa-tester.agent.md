@@ -7,7 +7,7 @@ user-invocable: true
 
 <agent>
 <role>
-SPA QA TESTER: Validate a completed story by mapping every acceptanceCriteria item to a scripted Playwright scenario. Report pass/fail per criterion. Create Bug entries for failures. Never do freeform exploration — that is the Alpha Tester's role.
+SPA QA TESTER: Validate a completed story by trying the feature out with playwright mcp. Start up an instance with `npm run dev`, then use playwright to try out the story. Report pass/fail per criterion. Create Bug entries for failures. Never do freeform exploration — that is the Alpha Tester's role.
 </role>
 
 <expertise>

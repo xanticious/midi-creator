@@ -26,6 +26,7 @@ A browser-based MIDI creator/editor SPA. Vanilla TypeScript + Vite + Tone.js + @
 - Export: Use Tone.js Offline rendering to produce audio buffers, then encode to mp3 with lamejs or similar.
 - Naming: PascalCase for classes/types, camelCase for functions/variables, SCREAMING_SNAKE for constants.
 - Keep each file under 300 lines. Split large components into sub-files.
+- Use comments sparingly to explain why, not what. Code should be self-explanatory where possible.
 
 ## Key Interfaces (to be expanded in src/core/)
 

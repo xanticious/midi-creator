@@ -2,19 +2,40 @@
 
 import { appState } from "../core/AppState.ts";
 import { createEmptyProject } from "../core/trackHelpers.ts";
-import {
-  openFilePicker,
-  readFileAsArrayBuffer,
-  validateMidiExtension,
-} from "../io/fileLoader.ts";
+import { openFilePicker, readFileAsArrayBuffer, validateMidiExtension } from "../io/fileLoader.ts";
+import { loadMidiFile } from "../io/midiFile.ts";
 
 const APP_VERSION = "0.0.0";
 
 export function mountApp(container: HTMLElement): void {
+  const { title, bpm, timeSignature } = appState.project;
+  const timeSig = `${timeSignature.numerator}/${timeSignature.denominator}`;
+
   container.innerHTML = `
     <div class="app-shell">
       <header class="app-header">
-        <h1 class="app-title">🎹 MIDI Creator</h1>
+        <div class="header-brand">
+          <h1 class="app-title">🎹 MIDI Creator</h1>
+        </div>
+        <div class="header-project-meta">
+          <span
+            id="project-title"
+            class="project-title"
+            contenteditable="true"
+            spellcheck="false"
+            title="Click to rename project"
+            aria-label="Project title"
+          >${escapeHtml(title)}</span>
+          <label class="meta-field" title="Beats per minute (20–300)">
+            BPM:
+            <input id="input-bpm" type="number" min="20" max="300"
+                   class="meta-input meta-input--bpm"
+                   value="${bpm}" aria-label="Beats per minute" />
+          </label>
+          <span class="meta-field" title="Time signature">
+            Time: <span id="time-signature" class="meta-value">${timeSig}</span>
+          </span>
+        </div>
         <nav class="header-controls" aria-label="File actions">
           <button id="btn-new"    class="btn btn-secondary" title="New project">New</button>
           <button id="btn-open"   class="btn btn-secondary" title="Open .mid file">Open</button>
@@ -46,11 +67,6 @@ export function mountApp(container: HTMLElement): void {
         <div class="transport-controls">
           <button id="btn-play" class="btn btn-transport" title="Play">▶ Play</button>
           <button id="btn-stop" class="btn btn-transport" title="Stop">■ Stop</button>
-          <label class="bpm-control">
-            BPM:
-            <input id="input-bpm" type="number" min="20" max="300"
-                   value="${appState.project.bpm}" aria-label="Beats per minute" />
-          </label>
         </div>
         <div class="status-bar">
           <span class="status-indicator" id="midi-status" title="MIDI connection status">
@@ -85,8 +101,17 @@ function bindControls(container: HTMLElement): void {
     openFilePicker()
       .then((result) => {
         if (!result) return; // user cancelled
-        appState.setPendingMidi(result.buffer, result.filename);
-        setStatus(container, `File loaded: ${result.filename}`);
+        try {
+          const project = loadMidiFile(result.buffer);
+          appState.loadProject(project);
+          appState.setPendingMidi(result.buffer, result.filename);
+        } catch (parseErr: unknown) {
+          const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+          setStatus(container, `Error: Could not parse "${result.filename}": ${msg}`);
+          return;
+        }
+        mountApp(container);
+        setStatus(container, `Opened: ${result.filename}`);
       })
       .catch((err: unknown) => {
         const msg = err instanceof Error ? err.message : String(err);
@@ -109,7 +134,9 @@ function bindControls(container: HTMLElement): void {
   bindDragAndDrop(container);
 
   container.querySelector("#input-bpm")?.addEventListener("change", (e) => {
-    const val = parseInt((e.target as HTMLInputElement).value, 10);
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const val = parseInt(target.value, 10);
     if (!isNaN(val) && val >= 20 && val <= 300) {
       appState.project.bpm = val;
       appState.playback.bpm = val;
@@ -150,8 +177,17 @@ function bindDragAndDrop(container: HTMLElement): void {
 
     readFileAsArrayBuffer(file)
       .then((buffer) => {
-        appState.setPendingMidi(buffer, file.name);
-        setStatus(container, `File loaded: ${file.name}`);
+        try {
+          const project = loadMidiFile(buffer);
+          appState.loadProject(project);
+          appState.setPendingMidi(buffer, file.name);
+        } catch (parseErr: unknown) {
+          const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+          setStatus(container, `Error: Could not parse "${file.name}": ${msg}`);
+          return;
+        }
+        mountApp(container);
+        setStatus(container, `Opened: ${file.name}`);
       })
       .catch((err: unknown) => {
         const msg = err instanceof Error ? err.message : String(err);

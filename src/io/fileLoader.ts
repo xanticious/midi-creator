@@ -6,12 +6,18 @@ export function validateMidiExtension(filename: string): boolean {
 }
 
 /** Wraps FileReader so callers can use async/await. */
-export function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+export async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   return new Promise<ArrayBuffer>((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (): void => resolve(reader.result as ArrayBuffer);
-    reader.onerror = (): void =>
-      reject(new Error(`Failed to read file: ${file.name}`));
+    reader.onload = (): void => {
+      const result = reader.result;
+      if (!(result instanceof ArrayBuffer)) {
+        reject(new Error(`Unexpected result type for file: ${file.name}`));
+        return;
+      }
+      resolve(result);
+    };
+    reader.onerror = (): void => { reject(new Error(`Failed to read file: ${file.name}`)); };
     reader.readAsArrayBuffer(file);
   });
 }
@@ -25,7 +31,7 @@ export interface FileLoadResult {
  * Opens the native OS file-picker restricted to .mid / .midi files.
  * Resolves with the ArrayBuffer + filename, or null if the user cancels.
  */
-export function openFilePicker(): Promise<FileLoadResult | null> {
+export async function openFilePicker(): Promise<FileLoadResult | null> {
   return new Promise<FileLoadResult | null>((resolve, reject) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -50,15 +56,13 @@ export function openFilePicker(): Promise<FileLoadResult | null> {
 
       if (!validateMidiExtension(file.name)) {
         reject(
-          new Error(
-            `Unsupported file type "${file.name}". Please choose a .mid or .midi file.`,
-          ),
+          new Error(`Unsupported file type "${file.name}". Please choose a .mid or .midi file.`),
         );
         return;
       }
 
       readFileAsArrayBuffer(file)
-        .then((buffer) => resolve({ buffer, filename: file.name }))
+        .then((buffer) => { resolve({ buffer, filename: file.name }); })
         .catch(reject);
     });
 

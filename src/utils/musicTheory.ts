@@ -30,7 +30,7 @@ export function midiToNoteName(midi: number): string {
 export function noteNameToMidi(name: string): number {
   const match = name.match(/^([A-G]#?)(-?\d+)$/);
   if (!match) throw new Error(`Invalid note name: ${name}`);
-  const noteIndex = NOTE_NAMES.indexOf(match[1] as (typeof NOTE_NAMES)[number]);
+  const noteIndex = (NOTE_NAMES as readonly string[]).indexOf(match[1]);
   const octave = parseInt(match[2], 10);
   return (octave + 1) * 12 + noteIndex;
 }

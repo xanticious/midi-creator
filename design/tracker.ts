@@ -212,7 +212,7 @@ export const stories: Story[] = [
     description:
       'Add a file-input element (or drag-and-drop zone) that accepts .mid files and reads them as ArrayBuffer.',
     type: 'Feature',
-    status: 'Open',
+    status: 'Done',
     epicId: 'E1',
     dependsOnStoryIds: ['S1'],
     acceptanceCriteria: [

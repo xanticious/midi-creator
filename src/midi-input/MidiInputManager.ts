@@ -9,14 +9,14 @@ export class MidiInputManager {
   private onNoteOff: MidiMessageHandler | null = null;
 
   async init(): Promise<boolean> {
-    if (!navigator.requestMIDIAccess) {
+    if (!('requestMIDIAccess' in navigator)) {
       console.warn("Web MIDI API not supported in this browser.");
       return false;
     }
     try {
       this.access = await navigator.requestMIDIAccess();
       this.bindInputs();
-      this.access.onstatechange = () => this.bindInputs();
+      this.access.onstatechange = () => { this.bindInputs(); };
       return true;
     } catch (err) {
       console.error("MIDI access denied:", err);
@@ -27,7 +27,7 @@ export class MidiInputManager {
   private bindInputs(): void {
     if (!this.access) return;
     for (const input of this.access.inputs.values()) {
-      input.onmidimessage = (event: MIDIMessageEvent) => this.handleMessage(event);
+      input.onmidimessage = (event: MIDIMessageEvent) => { this.handleMessage(event); };
     }
   }
 

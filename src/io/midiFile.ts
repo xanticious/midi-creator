@@ -62,7 +62,7 @@ export function saveMidiFile(project: MidiProject): Uint8Array {
 
 export function downloadMidi(project: MidiProject, filename = "project.mid"): void {
   const bytes = saveMidiFile(project);
-  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: "audio/midi" });
+  const blob = new Blob([bytes.buffer], { type: "audio/midi" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

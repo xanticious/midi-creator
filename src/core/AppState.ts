@@ -24,7 +24,7 @@ export function createDefaultPlaybackState(): PlaybackState {
 }
 
 class AppState {
-  private static instance: AppState;
+  private static instance: AppState | undefined;
 
   project: MidiProject = createDefaultProject();
   playback: PlaybackState = createDefaultPlaybackState();
